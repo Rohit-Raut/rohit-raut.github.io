@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rohit Raut | Particle Physics | Yale University</title>
+    <style>
+        :root {
+            --yale-blue: #00356B;
+            --yale-accent: #286DC0;
+            --yale-light: #63A1FF;
+            --dark-text: #0F1C2E;
+            --light-bg: #F5F7FA;
+            --paper-white: #ffffff;
+            --highlight: #FFD700;
+            --section-padding: 6rem 2rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Source Sans Pro', 'Helvetica Neue', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 70px;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.7;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Interactive Particle Background */
+        #particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+
+        header {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--paper-white);
+            overflow: hidden;
+            padding: 0 2rem;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--yale-blue), #000F23);
+            z-index: -1;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 53, 107, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 0.5rem 0;
+            background-color: rgba(0, 53, 107, 0.98);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--paper-white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo span {
+            color: var(--yale-light);
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--yale-light);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-left: 2rem;
+        }
+
+        .nav-link {
+            color: var(--paper-white);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--highlight);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover:after,
+        .nav-link.active:after {
+            width: 100%;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--paper-white);
+        }
+
+        /* Hero Section */
+        .profile-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .profile-img {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 4px solid var(--yale-light);
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .particle-orbit {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: calc(100% + 40px);
+            height: calc(100% + 40px);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--highlight);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--highlight), 0 0 20px var(--highlight);
+        }
+
+        .particle:nth-child(1) {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: pulseSize 3s ease-in-out infinite;
+        }
+
+        .particle:nth-child(2) {
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            animation: pulseSize 3s ease-in-out infinite 1s;
+        }
+
+        .particle:nth-child(3) {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: pulseSize 3s ease-in-out infinite 0.5s;
+        }
+
+        .particle:nth-child(4) {
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            animation: pulseSize 3s ease-in-out infinite 1.5s;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulseSize {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--yale-light);
+        }
+
+        .hero-description {
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--paper-white);
+            text-decoration: none;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-20px) translateX(-50%); }
+            60% { transform: translateY(-10px) translateX(-50%); }
+        }
+
+        /* Section Styles */
+        section {
+            padding: var(--section-padding);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--yale-blue);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--yale-accent);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #555;
+        }
+
+        /* Research Section */
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .research-card {
+            background-color: var(--paper-white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .research-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .research-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--yale-blue), var(--yale-light));
+        }
+
+        .research-card-content {
+            padding: 2rem;
+        }
+
+        .research-icon {
+            font-size: 2.5rem;
+            color: var(--yale-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .research-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--yale-blue);
+        }
+
+        /* Publications Section */
+        .publications-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .publication-card {
+            background-color: var(--paper-white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .publication-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .publication-date {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--yale-blue);
+            color: var(--paper-white);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .publication-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--yale-blue);
+        }
+        
+        .publication-authors {
+            font-style: italic;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .publication-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--yale-accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .publication-link:hover {
+            color: var(--yale-blue);
+        }
+
+        /* Presentations Section - Classical List Style */
+        .presentations-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .presentation-item {
+            background-color: var(--paper-white);
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .presentation-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .presentation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        
+        .presentation-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--yale-blue);
+            margin: 0;
+        }
+        
+        .presentation-date {
+            color: #777;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+        
+        .presentation-content {
+            margin-top: 0.5rem;
+        }
+        
+        .presentation-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            color: var(--yale-accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .presentation-link:hover {
+            color: var(--yale-blue);
+        }
+
+        /* Teaching Section */
+        .teaching-container {
+            background-color: var(--paper-white);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .teaching-item {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .teaching-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .teaching-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--yale-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .teaching-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .teaching-period,
+        .teaching-institution {
+            margin-right: 1.5rem;
+            color: #555;
+        }
+
+        /* Research Tools Section - Tag-based Display */
+        .tools-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .tools-category {
+            margin-bottom: 3rem;
+        }
+        
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--yale-blue);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--yale-light);
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .skill-tag {
+            background-color: rgba(40, 109, 192, 0.1);
+            color: var(--yale-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag.advanced {
+            background-color: rgba(40, 109, 192, 0.2);
+            border-left: 4px solid var(--yale-blue);
+        }
+        
+        .skill-tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Collaborations Section */
+        .collaborations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Fix collaboration logo styling */
+        .collab-card {
+            background-color: var(--paper-white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+            height: 200px;
+        }
+
+        .collab-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .collab-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collab-card:hover .collab-logo {
+            transform: scale(1.1);
+        }
+
+        .collab-name {
+            font-weight: 700;
+            color: var(--yale-blue);
+            text-align: center;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .contact-info {
+            background-color: var(--paper-white);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--yale-light);
+            color: var(--paper-white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .contact-content {
+            flex-grow: 1;
+        }
+
+        .contact-title {
+            font-weight: 700;
+            color: var(--yale-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-form {
+            background-color: var(--paper-white);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--yale-blue);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            border-color: var(--yale-accent);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: var(--yale-blue);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--yale-accent);
+            transform: translateY(-3px);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background-color: var(--yale-light);
+            color: var(--paper-white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            background-color: var(--yale-blue);
+        }
+
+        /* Interactive Neutrino Oscillation Visualizer */
+        .interactive-section {
+            padding: 4rem 0;
+            background-color: var(--paper-white);
+            margin: 5rem 0;
+        }
+
+        .interactive-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .neutrino-visualizer-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #010b15;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            margin-top: 3rem;
+        }
+        
+        /* Neutrino detector simulation elements */
+        .detector-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 70%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .detector-layers {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detector-layer {
+            flex: 1;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .detector-layer:last-child {
+            border-bottom: none;
+        }
+        
+        .neutrino-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            box-shadow: 0 0 8px #4CAF50;
+        }
+        
+        .detection-flash {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            animation: flash 1s ease-out;
+        }
+        
+        @keyframes flash {
+            0% { opacity: 0.8; transform: scale(0.1); }
+            100% { opacity: 0; transform: scale(3); }
+        }
+
+        /* Footer styles updated to center content */
+        footer {
+            background-color: var(--yale-blue);
+            color: var(--paper-white);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid var(--yale-light);
+        }
+
+        .footer-logo-text {
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        .footer-about p {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background-color: var(--yale-light);
+            color: var(--paper-white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            background-color: var(--yale-accent);
+        }
+
+        .footer-bottom {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 2rem;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .timeline:before {
+                left: 30px;
+            }
+
+            .timeline-content {
+                width: calc(100% - 60px);
+                float: right;
+                margin-left: 60px;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content {
+                margin-left: 60px;
+            }
+
+            .timeline-item:nth-child(odd) .timeline-content:before,
+            .timeline-item:nth-child(even) .timeline-content:before {
+                left: -10px;
+                top: 24px;
+                transform: rotate(45deg);
+            }
+
+            .timeline-marker {
+                left: 30px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                right: -100%;
+                flex-direction: column;
+                background-color: var(--yale-blue);
+                width: 70%;
+                height: calc(100vh - 70px);
+                padding: 2rem;
+                transition: all 0.3s ease;
+                z-index: 999;
+            }
+
+            .nav-menu.active {
+                right: 0;
+            }
+
+            .nav-item {
+                margin: 1.5rem 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading animation */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--yale-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .atom {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nucleus {
+            width: 20px;
+            height: 20px;
+            background-color: var(--highlight);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .electron-orbit {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: rotate 2s linear infinite;
+        }
+
+        .electron-orbit:nth-child(2) {
+            transform: rotate(60deg);
+            animation-duration: 1.5s;
+        }
+
+        .electron-orbit:nth-child(3) {
+            transform: rotate(120deg);
+            animation-duration: 2.5s;
+        }
+
+        .electron {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background-color: var(--yale-light);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--yale-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="atom">
+            <div class="nucleus"></div>
+            <div class="electron-orbit">
+                <div class="electron"></div>
+            </div>
+            <div class="electron-orbit">
+                <div class="electron"></div>
+            </div>
+            <div class="electron-orbit">
+                <div class="electron"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particle Background -->
+    <canvas id="particle-container"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="assets/profile.jpeg" alt="Rohit Raut">
+                <span>Rohit Raut</span>
+            </a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="#research" class="nav-link">Research</a></li>
+                <!-- <li class="nav-item"><a href="#publications" class="nav-link">Publications</a></li>
+                <li class="nav-item"><a href="#presentations" class="nav-link">Presentations</a></li> -->
+                <li class="nav-item"><a href="#teaching" class="nav-link">Teaching</a></li>
+                <li class="nav-item"><a href="#tools" class="nav-link">Research Tools</a></li>
+                <li class="nav-item"><a href="#collaborations" class="nav-link">Collaborations</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home">
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div class="profile-container">
+                <div class="particle-orbit">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+                <img src="assets/profile.jpeg" alt="Rohit Raut" class="profile-img">
+            </div>
+            <h1 class="hero-title">Rohit Raut</h1>
+            <p class="hero-subtitle">Particle Physics PhD Candidate | Yale University</p>
+            <p class="hero-description">Exploring the frontiers of neutrino physics and dark matter search through the DUNE experiment at Fermilab and developing novel detector technologies for liquid argon time projection chambers.</p>
+            <div class="social-links">
+                <a href="https://github.com/Rohit-Raut" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/rohit-r-905077178/" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                <!-- <a href="#" class="social-link"><i class="fab fa-twitter"></i></a> -->
+                <a href="https://physics.yale.edu" class="social-link"><i class="fas fa-graduation-cap"></i></a>
+            </div>
+        </div>
+        <a href="#research" class="scroll-indicator">
+            <span>Discover my research</span>
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </header>
+
+    <!-- Research Focus Section -->
+    <section id="research" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Research Focus</h2>
+            <p class="section-subtitle">My work spans across experimental particle physics, focusing on neutrino detection, dark matter search, and detector development for the DUNE experiment.</p>
+        </div>
+        <div class="research-grid">
+            <div class="research-card">
+                <div class="research-card-content">
+                    <div class="research-icon">
+                        <i class="fas fa-atom"></i>
+                    </div>
+                    <h3 class="research-title">Neutrino Detection</h3>
+                    <p>Working on high voltage systems and photon detection for the DUNE experiment. Focused on low energy calibration using Bismuth-207 sources and developing purity monitoring systems. Contributing to field cage construction which provides sustained electric field inside the cryostat for optimal particle detection.</p>
+                </div>
+            </div>
+            <div class="research-card">
+                <div class="research-card-content">
+                    <div class="research-icon">
+                        <i class="fas fa-user-astronaut"></i>
+                    </div>
+                    <h3 class="research-title">Dark Matter Search</h3>
+                    <p>Analyzing ICARUS data for beyond Standard Model physics with focus on boosted dark matter interactions. Contributing to the DAMSA experiment, investigating low-energy nuclear recoil signatures in liquid argon detectors and developing novel search strategies for inelastic dark matter scattering events.</p>
+                </div>
+            </div>
+            <div class="research-card">
+                <div class="research-card-content">
+                    <div class="research-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3 class="research-title">Detector Development</h3>
+                    <p>Optimizing LArTPC systems at CERN and Fermilab with emphasis on readout electronics and triggering algorithms. Contributing to cryogenic testing and calibration procedures. Conducting feasibility studies for the DAMSA experiment and performing quantum efficiency and lifetime measurements for Large Area Picosecond Photodetectors (LAPPDs).</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Publications Section -->
+    <section id="publications" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Publications</h2>
+            <p class="section-subtitle">A selection of my recent research publications and contributions to high-energy physics.</p>
+        </div>
+        <div class="publications-container">
+            <div class="publication-card">
+                <span class="publication-date">2024 </span>
+                <h3 class="publication-title">The First Search for Inelastic Boosted Dark Matter with ICARUS at Gran Sasso</h3>
+                <p class="publication-authors">H. Carranza, J. Yu, [R. Raut], [ICARUS Collaboration], et al.</p>
+                <a href="https://arxiv.org/abs/2412.09516" class="publication-link">arXiv:2412.09516 <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="publication-card">
+                <span class="publication-date">2024</span>
+                <h3 class="publication-title">ProtoDUNE NP04 Horizontal Drift shift control and Bi-207 analysis for purity monitor of LAr</h3>
+                <p class="publication-authors">R. Raut, F. Resnati et al.</p>
+                <a href="https://cds.cern.ch/record/2918242?ln=en" class="publication-link">CERN Document Server <i class="fas fa-external-link-alt"></i></a>
+            </div>
+            <div class="publication-card">
+                <span class="publication-date">2024 (In Preparation)</span>
+                <h3 class="publication-title">Measuring the Lifetime of Microchannel Plate Photomultiplier Tubes with an Accelerated Localized Aging Method</h3>
+                <p class="publication-authors">I. Tzoka, V.A. Chirayath, R. Raut, J. Asaadi, and A. Brandt</p>
+            </div>
+            <div class="publication-card">
+                <span class="publication-date">2024 (In Preparation)</span>
+                <h3 class="publication-title">Bi-207 for Purity Monitor in LArTPC at DUNE</h3>
+                <p class="publication-authors">R. Raut, J. Yu, et al.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Neutrino Oscillation Visualizer -->
+    <div class="interactive-section fade-in">
+        <div class="interactive-inner">
+            <div class="section-header">
+                <h2 class="section-title">Neutrino Physics Visualizer</h2>
+                <p class="section-subtitle">Explore the fundamental principles of neutrino oscillation and detection through this interactive visualization.</p>
+            </div>
+            <div class="neutrino-visualizer-container" id="neutrino-canvas">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Presentations Section -->
+    <section id="presentations" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Presentations & Workshops</h2>
+            <p class="section-subtitle">Sharing research findings and insights at conferences, workshops, and collaboration meetings.</p>
+        </div>
+        <div class="presentations-list">
+            <div class="presentation-item">
+                <div class="presentation-header">
+                    <h3 class="presentation-title">UROP New Voice Symposium: Machine Learning for Inelastic Boosted Dark Matter search using ICARUS detector at Grand Sasso </h3>
+                    <span class="presentation-date"><i class="far fa-calendar-alt"></i> March 2024</span>
+                </div>
+            </div>
+            
+            <div class="presentation-item">
+                <div class="presentation-header">
+                    <h3 class="presentation-title">TSAPS Southern Methodist University:Bismuth-207 for Liquid Argon Purity Monitoring in NP04-HD detector </h3>
+                    <span class="presentation-date"><i class="far fa-calendar-alt"></i> October 2024</span>
+                </div>
+                <div class="presentation-content">
+                    <a href="https://meetings.aps.org/Meeting/TSF24/Session/F03.6" class="presentation-link">View Presentation <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+            
+            <div class="presentation-item">
+                <div class="presentation-header">
+                    <h3 class="presentation-title">UTA Honors College: Winter Fellowship at CERN</h3>
+                    <span class="presentation-date"><i class="far fa-calendar-alt"></i> March 2023</span>
+                </div>
+                <div class="presentation-content">
+                    <a href="https://cdn.web.uta.edu/-/media/project/website/honors-college/documents/about/updated-spring-23-veneratio.ashx" class="presentation-link">View Article <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+            
+            <div class="presentation-item">
+                <div class="presentation-header">
+                    <h3 class="presentation-title">TSAPS Rice University:Study on electrical arcing in ProtoDUNE dual-phase detector</h3>
+                    <span class="presentation-date"><i class="far fa-calendar-alt"></i> September 2022</span>
+                </div>
+                <div class="presentation-content">
+                    <a href="https://meetings.aps.org/Meeting/TSF22/Session/G01.6" class="presentation-link">View Presentation <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+            
+            <div class="presentation-item">
+                <div class="presentation-header">
+                    <h3 class="presentation-title">CERN Workshops</h3>
+                    <span class="presentation-date"><i class="far fa-calendar-alt"></i> January 2023 & July 2024</span>
+                </div>
+                <div class="presentation-content">
+                    <p>Participated in workshop and collaboration meeting for ProtoDUNE-II (January 2023). Attended Cloud Chamber and Silicon Sensor workshop (July 2024).</p>
+                </div>
+            </div>
+            
+            <div class="presentation-item">
+                <div class="presentation-header">
+                    <h3 class="presentation-title">Fermilab Workshop</h3>
+                    <span class="presentation-date"><i class="far fa-calendar-alt"></i> May 2022</span>
+                </div>
+                <div class="presentation-content">
+                    <p>Participated in workshop and collaboration meeting on DUNE and ProtoDUNE experiments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Teaching Section -->
+    <section id="teaching" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Teaching Experience</h2>
+            <p class="section-subtitle">Sharing knowledge and supporting student learning through various teaching roles at The University of Texas at Arlington.</p>
+        </div>
+        <div class="teaching-container">
+            <div class="teaching-item">
+                <h3 class="teaching-title">Physics Student Assistant</h3>
+                <div class="teaching-meta">
+                    <span class="teaching-period"><i class="far fa-clock"></i> June 2023 - Present</span>
+                    <span class="teaching-institution"><i class="fas fa-university"></i> The University of Texas at Arlington</span>
+                </div>
+                <p>Physics I and II, Modern Physics, Quantum Mechanics I and II, Classical Mechanics, E&M I and II, and other physics courses. </p>
+            </div>
+            <div class="teaching-item">
+                <h3 class="teaching-title">Mathematics Student Assistant</h3>
+                <div class="teaching-meta">
+                    <span class="teaching-period"><i class="far fa-clock"></i> January 2023 - May 2023</span>
+                    <span class="teaching-institution"><i class="fas fa-university"></i> The University of Texas at Arlington</span>
+                </div>
+                <p>Calculus I, II, and III, Ordinary Differential Equations, Partial Differential Equations, Complex Analysis, Linear Algebra, and other mathematics courses. </p>
+            </div>
+            <div class="teaching-item">
+                <h3 class="teaching-title">Teaching Assistant and Grader</h3>
+                <div class="teaching-meta">
+                    <span class="teaching-period"><i class="far fa-clock"></i> Fall 2023 - Spring 2024</span>
+                    <span class="teaching-institution"><i class="fas fa-university"></i> The University of Texas at Arlington</span>
+                </div>
+                <p>General Technical Physics I, General Technical Physics II, and Nuclear and Particle Physics</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Tools Section -->
+    <section id="tools" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Research Tools & Skills</h2>
+            <p class="section-subtitle">Specialized technical expertise and software proficiency for neutrino physics and dark matter research.</p>
+        </div>
+        <div class="tools-section">
+            <div class="tools-category">
+                <h3 class="category-title">Data Analysis & Simulation</h3>
+                <p>Expertise in specialized data analysis frameworks and simulation tools essential for neutrino physics research and LArTPC detector analysis.</p>
+                <div class="skill-tags">
+                    <span class="skill-tag advanced">ROOT Data Analysis Framework</span>
+                    <span class="skill-tag advanced">GEANT4 Simulation</span>
+                    <span class="skill-tag advanced">LArSoft Framework</span>
+                    <span class="skill-tag">Python Data Analysis</span>
+                    <span class="skill-tag">C++ Programming</span>
+                    <span class="skill-tag">Statistical Methods</span>
+                </div>
+            </div>
+            
+            <div class="tools-category">
+                <h3 class="category-title">Detector Systems & Hardware</h3>
+                <p>Hands-on experience with liquid argon detector systems, purity monitoring, and readout electronics for neutrino and dark matter experiments.</p>
+                <div class="skill-tags">
+                    <span class="skill-tag advanced">LArTPC Operations</span>
+                    <span class="skill-tag advanced">Purity Monitoring Systems</span>
+                    <span class="skill-tag advanced">High Voltage Systems</span>
+                    <span class="skill-tag">Field Cage Construction</span>
+                    <span class="skill-tag">Photon Detection Systems</span>
+                    <span class="skill-tag">Large Area Picosecond Photodetectors (LAPPDs)</span>
+                    <span class="skill-tag">Data Acquisition Systems</span>
+                </div>
+            </div>
+            
+            <div class="tools-category">
+                <h3 class="category-title">Particle Physics Expertise</h3>
+                <p>Specialized knowledge in experimental particle physics with focus on neutrino physics and dark matter search.</p>
+                <div class="skill-tags">
+                    <span class="skill-tag advanced">Neutrino Physics</span>
+                    <span class="skill-tag advanced">Dark Matter Detection</span>
+                    <span class="skill-tag">Bismuth-207 Calibration</span>
+                    <span class="skill-tag">Low-Energy Event Reconstruction</span>
+                    <span class="skill-tag">Quantum Efficiency Measurements</span>
+                    <span class="skill-tag">Detector Feasibility Studies</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collaborations Section -->
+    <section id="collaborations" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Major Collaborations</h2>
+            <p class="section-subtitle">Working with leading institutions and experiments in neutrino physics and dark matter research.</p>
+        </div>
+        <div class="collaborations-grid">
+            <div class="collab-card">
+                <img src="assets/cern.png" alt="CERN" class="collab-logo">
+                <h3 class="collab-name">CERN</h3>
+            </div>
+            <div class="collab-card">
+                <img src="assets/fermilab.jpg" alt="Fermilab" class="collab-logo">
+                <h3 class="collab-name">Fermilab</h3>
+            </div>
+            <div class="collab-card">
+                <img src="assets/dune.png" alt="DUNE" class="collab-logo">
+                <h3 class="collab-name">DUNE</h3>
+            </div>
+            <div class="collab-card">
+                <img src="assets/DAMSA.jpg" alt="DAMSA" class="collab-logo">
+                <h3 class="collab-name">DAMSA Experiment</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="fade-in">
+        <div class="section-header">
+            <h2 class="section-title">Collaboration Inquiry</h2>
+            <p class="section-subtitle">Interested in discussing research opportunities, collaborations, or have questions about my work? Get in touch!</p>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-content">
+                        <h3 class="contact-title">Email</h3>
+                        <p>rohit.raut@yale.edu</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="contact-content">
+                        <h3 class="contact-title">Office</h3>
+                        <p>Wright Laboratory<br>Yale University<br>New Haven, CT 06520</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-content">
+                        <h3 class="contact-title">Phone</h3>
+                        <p>+1 (203) 432-3650</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-form">
+                <h3 class="form-title" style="margin-bottom: 1.5rem; color: var(--yale-blue);">Send a Message</h3>
+                <form id="collaboration-form" action="https://formspree.io/f/xkgjgpel" method="POST">
+                    <div class="form-group">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" rows="5" class="form-control" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Send Neutrino Message <i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-about">
+                <div class="footer-logo">
+                    <img src="assets/profile.jpeg" alt="Rohit Raut">
+                    <span class="footer-logo-text">Rohit Raut</span>
+                </div>
+                <p>Particle Physics PhD Candidate at Yale University</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fas fa-graduation-cap"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Rohit Raut | Yale University Department of Physics</p>
+        </div>
+    </footer>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+        // Preloader
+        window.addEventListener('load', function() {
+            const preloader = document.querySelector('.preloader');
+            preloader.classList.add('fade-out');
+        });
+
+        // Mobile Navigation Toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileMenuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+        });
+
+        // Scroll Animation for Elements
+        const fadeElements = document.querySelectorAll('.fade-in');
+
+        function checkFade() {
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', checkFade);
+        window.addEventListener('load', checkFade);
+
+        // Navbar Scroll Effect
+        const nav = document.querySelector('nav');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Highlight Active Navigation Link
+        const sections = document.querySelectorAll('section, header');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', function() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (window.pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Skill Bar Animation
+        function animateSkillBars() {
+            const skillBars = document.querySelectorAll('.skill-progress');
+            
+            skillBars.forEach(bar => {
+                const width = bar.getAttribute('data-width');
+                bar.style.width = width + '%';
+            });
+        }
+
+        // Trigger skill bar animation when in viewport
+        const skillSection = document.querySelector('#tools');
+        
+        function checkSkillsVisibility() {
+            const sectionTop = skillSection.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (sectionTop < windowHeight - 100) {
+                animateSkillBars();
+                window.removeEventListener('scroll', checkSkillsVisibility);
+            }
+        }
+
+        window.addEventListener('scroll', checkSkillsVisibility);
+        window.addEventListener('load', checkSkillsVisibility);
+
+        // Neutrino Oscillation Visualization with guaranteed animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('neutrino-canvas');
+            container.style.position = 'relative';
+            container.style.overflow = 'hidden';
+            
+            // Create legend
+            const legend = document.createElement('div');
+            legend.style.position = 'absolute';
+            legend.style.bottom = '20px';
+            legend.style.left = '20px';
+            legend.style.background = 'rgba(0,0,0,0.7)';
+            legend.style.padding = '15px';
+            legend.style.borderRadius = '8px';
+            legend.style.color = 'white';
+            legend.style.zIndex = '10';
+            legend.innerHTML = `
+                <div style="font-weight: bold; font-size: 16px; margin-bottom: 15px;">Neutrino Oscillation</div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #4CAF50; margin-right: 12px;"></div>
+                    <div>Electron Neutrino</div>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #2196F3; margin-right: 12px;"></div>
+                    <div>Muon Neutrino</div>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #F44336; margin-right: 12px;"></div>
+                    <div>Tau Neutrino</div>
+                </div>
+            `;
+            container.appendChild(legend);
+            
+            // Title
+            const title = document.createElement('div');
+            title.style.position = 'absolute';
+            title.style.top = '20px';
+            title.style.left = '0';
+            title.style.width = '100%';
+            title.style.textAlign = 'center';
+            title.style.color = 'white';
+            title.style.fontSize = '20px';
+            title.style.fontWeight = 'bold';
+            title.textContent = 'Neutrino Oscillation Visualization';
+            container.appendChild(title);
+            
+            // Neutrino colors
+            const neutrinoTypes = [
+                { name: 'Electron Neutrino', color: '#4CAF50' },
+                { name: 'Muon Neutrino', color: '#2196F3' },
+                { name: 'Tau Neutrino', color: '#F44336' }
+            ];
+            
+            // Animation state
+            const activeNeutrinos = [];
+            const trailElements = {};
+            let animationRunning = false;
+            
+            // Animation loop
+            function animate() {
+                // Update all active neutrinos
+                for (let i = 0; i < activeNeutrinos.length; i++) {
+                    const neutrino = activeNeutrinos[i];
+                    
+                    // Move neutrino
+                    neutrino.position += neutrino.speed;
+                    neutrino.element.style.left = neutrino.position + 'px';
+                    neutrino.label.style.left = neutrino.position + 'px';
+                    
+                    // Update active trail
+                    const activeTrail = trailElements[neutrino.id].find(trail => trail.active);
+                    if (activeTrail) {
+                        activeTrail.element.style.width = (neutrino.position - parseFloat(activeTrail.element.style.left)) + 'px';
+                    }
+                    
+                    // Check for oscillation
+                    if (neutrino.position > neutrino.nextOscillation) {
+                        // Change to next type
+                        neutrino.currentType = (neutrino.currentType + 1) % neutrinoTypes.length;
+                        const newType = neutrinoTypes[neutrino.currentType];
+                        neutrino.element.style.backgroundColor = newType.color;
+                        neutrino.element.style.boxShadow = `0 0 10px ${newType.color}`;
+                        
+                        // Update label
+                        neutrino.label.textContent = newType.name.split(' ')[0];
+                        
+                        // Mark current trail as inactive
+                        if (activeTrail) {
+                            activeTrail.active = false;
+                        }
+                        
+                        // Create new trail segment with new color
+                        const newTrail = document.createElement('div');
+                        newTrail.style.position = 'absolute';
+                        newTrail.style.height = '2px';
+                        newTrail.style.top = (neutrino.top + 6) + 'px';
+                        newTrail.style.left = neutrino.position + 'px';
+                        newTrail.style.width = '0px';
+                        newTrail.style.backgroundColor = newType.color;
+                        newTrail.style.opacity = '0.5';
+                        container.appendChild(newTrail);
+                        
+                        // Add to trails array
+                        trailElements[neutrino.id].push({
+                            element: newTrail,
+                            active: true
+                        });
+                        
+                        // Add oscillation marker
+                        const marker = document.createElement('div');
+                        marker.style.position = 'absolute';
+                        marker.style.width = '8px';
+                        marker.style.height = '8px';
+                        marker.style.borderRadius = '50%';
+                        marker.style.backgroundColor = 'white';
+                        marker.style.opacity = '0.7';
+                        marker.style.top = (neutrino.top + 2) + 'px';
+                        marker.style.left = (neutrino.position - 4) + 'px';
+                        container.appendChild(marker);
+                        
+                        // Set next oscillation point (ensure multiple oscillations)
+                        neutrino.nextOscillation = neutrino.position + 80 + Math.random() * 120;
+                    }
+                    
+                    // Remove when out of view
+                    if (neutrino.position > container.offsetWidth + 20) {
+                        // Remove neutrino and label
+                        neutrino.element.remove();
+                        neutrino.label.remove();
+                        
+                        // Remove all trails for this neutrino
+                        trailElements[neutrino.id].forEach(trail => {
+                            trail.element.remove();
+                        });
+                        delete trailElements[neutrino.id];
+                        
+                        // Remove from active neutrinos
+                        activeNeutrinos.splice(i, 1);
+                        i--;
+                        
+                        // Create a new neutrino
+                        setTimeout(createNeutrino, Math.random() * 1000);
+                    }
+                }
+                
+                // Continue animation loop
+                if (animationRunning) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            // Create a neutrino
+            let neutrinoId = 0;
+            
+            function createNeutrino() {
+                const id = neutrinoId++;
+                
+                // Create neutrino element
+                const neutrinoElement = document.createElement('div');
+                neutrinoElement.style.position = 'absolute';
+                neutrinoElement.style.width = '12px';
+                neutrinoElement.style.height = '12px';
+                neutrinoElement.style.borderRadius = '50%';
+                neutrinoElement.style.left = '20px';
+                
+                // Random vertical position
+                const top = 150 + Math.random() * 200;
+                neutrinoElement.style.top = top + 'px';
+                
+                // Set initial type
+                const currentType = 0;
+                neutrinoElement.style.backgroundColor = neutrinoTypes[currentType].color;
+                neutrinoElement.style.boxShadow = `0 0 10px ${neutrinoTypes[currentType].color}`;
+                
+                // Add to container
+                container.appendChild(neutrinoElement);
+                
+                // Create label
+                const label = document.createElement('div');
+                label.style.position = 'absolute';
+                label.style.color = 'white';
+                label.style.fontSize = '10px';
+                label.style.textAlign = 'center';
+                label.style.top = (top - 15) + 'px';
+                label.style.left = '20px';
+                label.style.width = '60px';
+                label.style.opacity = '0.8';
+                label.textContent = neutrinoTypes[currentType].name.split(' ')[0];
+                container.appendChild(label);
+                
+                // Create initial trail
+                const trail = document.createElement('div');
+                trail.style.position = 'absolute';
+                trail.style.height = '2px';
+                trail.style.top = (top + 6) + 'px';
+                trail.style.left = '20px';
+                trail.style.width = '0px';
+                trail.style.backgroundColor = neutrinoTypes[currentType].color;
+                trail.style.opacity = '0.5';
+                container.appendChild(trail);
+                
+                // Store trail
+                trailElements[id] = [{
+                    element: trail,
+                    active: true
+                }];
+                
+                // Create neutrino object
+                const neutrino = {
+                    id: id,
+                    element: neutrinoElement,
+                    label: label,
+                    position: 20,
+                    speed: 1.5 + Math.random(),
+                    top: top,
+                    currentType: currentType,
+                    nextOscillation: 120 + Math.random() * 100
+                };
+                
+                // Add to active neutrinos
+                activeNeutrinos.push(neutrino);
+                
+                // Start animation if not running
+                if (!animationRunning) {
+                    animationRunning = true;
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            // Create multiple neutrinos to start
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createNeutrino, i * 1000);
+            }
+        });
+
+        // Particle Background
+        (function() {
+            const canvas = document.getElementById('particle-container');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions
+            function setCanvasDimensions() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            window.addEventListener('resize', setCanvasDimensions);
+            setCanvasDimensions();
+            
+            // Particle class
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.radius = Math.random() * 1.5 + 0.5;
+                    this.speed = Math.random() * 0.5 + 0.2;
+                    this.directionX = Math.random() * 2 - 1;
+                    this.directionY = Math.random() * 2 - 1;
+                    this.color = `rgba(99, 161, 255, ${Math.random() * 0.5 + 0.1})`;
+                }
+                
+                update() {
+                    this.x += this.directionX * this.speed;
+                    this.y += this.directionY * this.speed;
+                    
+                    // Bounce off edges
+                    if (this.x < 0 || this.x > canvas.width) {
+                        this.directionX = -this.directionX;
+                    }
+                    
+                    if (this.y < 0 || this.y > canvas.height) {
+                        this.directionY = -this.directionY;
+                    }
+                }
+                
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                }
+            }
+            
+            // Create particles
+            const particles = [];
+            const particleCount = Math.min(100, window.innerWidth / 20);
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+            
+            // Draw connections between particles
+            function drawConnections() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 150) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(99, 161, 255, ${0.1 * (1 - distance / 150)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            // Animation loop
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                drawConnections();
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+        })();
+
+        // Form Submission
+        document.getElementById('collaboration-form').addEventListener('submit', function(e) {
+            // Form will be submitted to Formspree
+            console.log('Form submitted');
+        });
+
+        // Newsletter Form
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for subscribing! In a real implementation, your email would be added to the newsletter list.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
